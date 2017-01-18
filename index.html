@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Zip Code Map</title>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?&key=[PUT YOUR KEY HERE]"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+
+    <script type="text/javascript">
+        //http://bl.ocks.org/mbostock/899711
+        //https://developers.google.com/maps/articles/toomanymarkers
+        //run python -m SimpleHTTPServer 8000 to view
+        var map = ""; // create a map variable, with Global scope.
+        var markersArray = []; // create array to hold markers
+        var data;
+
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+
+            // setup some options
+            var mapCenterLatLong = new google.maps.LatLng(39.8282, -98.5795);
+
+            var mapOptions = {
+                center: mapCenterLatLong,
+                zoom: 4,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            // create the map, in the DIV defined, using the options set just above.
+            map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+            // create the markers
+            getData();
+        }
+
+        function codeAddress(zipCode) {
+            geocoder.geocode({
+                'address': zipCode
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+
+                    var lat = results[0].geometry.location.lat();
+                    var long = results[0].geometry.location.lng();
+                    var myLatLong = new google.maps.LatLng(lat, long);
+
+                    var marker = new google.maps.Marker({
+                        position: myLatLong,
+                        map: map,
+                    });
+
+                    markersArray.push(marker);
+
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+
+        function getData() {
+            d3.csv("data/zips.csv", function (d) {
+                var data = d;
+                var x = 0;
+
+                setInterval(function () {
+
+                    if (x < d.length) {
+                        codeAddress(d[x]["zipcode"]);
+                        //console.log(x);
+                    } else return;
+
+                    x++;
+                }, 600);
+
+            })
+        }
+    </script>
+</head>
+
+<body onload="initialize()">
+    <h1>Zip Code Map</h1>
+
+    <div id="map_canvas" style="width:1000px; height:600px;"></div>
+
+</body>
+
+</html>
