@@ -10,3 +10,5 @@ Can run locally by running the following:
 `python -m SimpleHTTPServer 8000`
 
 Go to localhost:8000 in Chrome
+
+Additional credit to [Eric Field](http://www.arch.virginia.edu/faculty/Eric_Field) at the University of Virginia and his [Data Visualization class](http://www.arch.virginia.edu/arch547/).
